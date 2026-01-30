@@ -1,0 +1,46 @@
+
+export const truthList = [
+  "Apa hal yang paling membuatmu merasa percaya diri?",
+  "Kapan terakhir kali kamu merasa sangat tidak percaya diri?",
+  "Siapa orang yang paling menginspirasimu untuk lebih percaya diri?",
+  "Pernahkah kamu pura-pura percaya diri padahal sebenarnya gugup?",
+  "Apa pencapaian kecil yang membuatmu bangga pada dirimu sendiri?",
+  "Bagian tubuh atau penampilan apa yang paling kamu sukai?",
+  "Apa hal yang paling kamu takutkan saat tampil di depan orang banyak?",
+  "Pernahkah kamu menolak kesempatan karena merasa kurang percaya diri?",
+  "Apa pujian terbaik yang pernah kamu terima?",
+  "Jika kamu bisa mengubah satu hal tentang dirimu untuk lebih percaya diri, apa itu?",
+  "Apa kebiasaan yang membuatmu merasa lebih kuat setiap hari?",
+  "Pernahkah kamu merasa minder dengan temanmu? Ceritakan.",
+  "Apa hal yang paling kamu banggakan dari dirimu saat ini?",
+  "Bagaimana cara kamu mengatasi rasa gugup?",
+  "Pernahkah kamu berpura-pura tahu sesuatu agar terlihat pintar?",
+  "Apa hal paling berani yang pernah kamu lakukan?",
+  "Apa kelemahan yang paling sering membuatmu ragu?",
+  "Jika harus mendeskripsikan dirimu dengan 3 kata positif, apa saja?",
+  "Pernahkah kamu merasa lebih percaya diri setelah gagal?",
+  "Apa mimpi besar yang ingin kamu capai meski orang lain meragukanmu?"
+];
+
+export const dareList = [
+  "Ucapkan 3 hal positif tentang dirimu dengan suara lantang.",
+  "Ceritakan pengalaman memalukanmu dengan penuh percaya diri.",
+  "Lakukan pose superhero selama 30 detik.",
+  "Katakan “Aku hebat!” sambil menatap mata orang di sebelahmu.",
+  "Bernyanyi satu bait lagu favoritmu di depan semua orang.",
+  "Ceritakan pencapaianmu yang paling membanggakan tanpa merendahkan diri.",
+  "Berjalan dengan gaya catwalk selama 1 menit.",
+  "Ceritakan mimpi terbesarmu seolah-olah kamu sudah mencapainya.",
+  "Tertawa keras selama 20 detik tanpa alasan.",
+  "Berikan pujian tulus kepada 3 orang di ruangan.",
+  "Ceritakan satu hal yang kamu sukai dari dirimu yang jarang orang tahu.",
+  "Bacakan kutipan motivasi dengan penuh semangat.",
+  "Lakukan perkenalan diri seolah kamu sedang wawancara kerja impianmu.",
+  "Ceritakan hal yang dulu kamu tak berani lakukan, tapi sekarang bisa.",
+  "Lakukan tarian bebas selama 30 detik.",
+  "Katakan “Aku pantas sukses” sebanyak 5 kali dengan ekspresi berbeda.",
+  "Ceritakan satu ketakutanmu lalu akui bahwa kamu bisa menghadapinya.",
+  "Berikan senyuman lebar selama 1 menit tanpa berhenti.",
+  "Ceritakan hal yang membuatmu bangga minggu ini.",
+  "Lakukan improvisasi pidato singkat tentang “percaya diri” selama 1 menit."
+];

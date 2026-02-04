@@ -28,8 +28,8 @@ const GameBoard = ({ config, playerPositions }) => {
       <div className="absolute inset-0 grid grid-cols-10 grid-rows-10">
         {board.flat().map((tile) => (
           <div key={tile} className="border-[0.5px] border-slate-100 flex items-center justify-center">
-            {config.truthPoints[tile] && <div className="w-4 h-4 md:w-8 md:h-8 bg-blue-50/50 rotate-45 rounded-md" />}
-            {config.darePoints[tile] && <div className="w-4 h-4 md:w-8 md:h-8 bg-red-50/50 rotate-45 rounded-md" />}
+            {config.truthTiles?.includes(tile) && <div className="w-4 h-4 md:w-8 md:h-8 bg-blue-50/50 rotate-45 rounded-md" />}
+            {config.dareTiles?.includes(tile) && <div className="w-4 h-4 md:w-8 md:h-8 bg-red-50/50 rotate-45 rounded-md" />}
           </div>
         ))}
       </div>
@@ -62,8 +62,8 @@ const GameBoard = ({ config, playerPositions }) => {
           <div key={tile} className="flex flex-col items-center justify-center p-1">
              <span className="text-[11px] md:text-base font-black text-slate-700">{tile}</span>
              <div className="flex gap-0.5 mt-0.5">
-                {config.truthPoints[tile] && <div className="w-2 h-2 md:w-4 md:h-4 bg-blue-500 rotate-45 shadow-sm border-2 border-white" title="Truth" />}
-                {config.darePoints[tile] && <div className="w-2 h-2 md:w-4 md:h-4 bg-red-500 rotate-45 shadow-sm border-2 border-white" title="Dare" />}
+                {config.truthTiles?.includes(tile) && <div className="w-2 h-2 md:w-4 md:h-4 bg-blue-500 rotate-45 shadow-sm border-2 border-white" title="Truth" />}
+                {config.dareTiles?.includes(tile) && <div className="w-2 h-2 md:w-4 md:h-4 bg-red-500 rotate-45 shadow-sm border-2 border-white" title="Dare" />}
              </div>
           </div>
         ))}

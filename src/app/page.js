@@ -4,6 +4,7 @@ import { generateBoardConfig } from "@/utils/gameLogic";
 import GameBoard from "@/components/GameBoard";
 import ActionModal from "@/components/ActionModal";
 import WinModal from "@/components/WinModal"; 
+import { truthList, dareList } from '@/utils/content';
 
 export default function Home() {
   const [gameState, setGameState] = useState("HOME");
@@ -26,15 +27,20 @@ export default function Home() {
   };
 
   const movePlayer = async (id, steps) => {
+
     let curr = playerPositions[id];
+    
+    // Jalankan animasi gerak satu per satu
     for (let i = 1; i <= steps; i++) {
       curr++;
-      if (curr > 100) { curr = 100; break; }
+      if (curr >= 100) { curr = 100; break; }
       setPlayerPositions(p => ({ ...p, [id]: curr }));
-      await new Promise(r => setTimeout(r, 250));
+      await new Promise(r => setTimeout(r, 200));
     }
 
     let final = curr;
+    
+    // Cek Ular atau Tangga
     if (config.ladders[final]) {
       await new Promise(r => setTimeout(r, 400));
       final = config.ladders[final];
@@ -45,15 +51,18 @@ export default function Home() {
     
     setPlayerPositions(p => ({ ...p, [id]: final }));
 
-    if (config.truthPoints[final]) {
-      setModal({ isOpen: true, type: "truth", content: config.truthPoints[final] });
-    } else if (config.darePoints[final]) {
-      setModal({ isOpen: true, type: "dare", content: config.darePoints[final] });
+    // LOGIKA DIAMOND: Ambil soal acak SETIAP KALI mendarat (mengatasi concern-mu)
+    if (final === 100) {
+      setWinner(id);
+    } else if (config.truthTiles.includes(final)) {
+      const randomTruth = truthList[Math.floor(Math.random() * truthList.length)];
+      setModal({ isOpen: true, type: "truth", content: randomTruth });
+    } else if (config.dareTiles.includes(final)) {
+      const randomDare = dareList[Math.floor(Math.random() * dareList.length)];
+      setModal({ isOpen: true, type: "dare", content: randomDare });
     } else {
       setTurn(t => t >= playerCount ? 1 : t + 1);
     }
-
-    if (final === 100) { setWinner(id); }
   };
 
   const handleRoll = async () => {

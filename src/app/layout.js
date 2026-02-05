@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Game Ular Tangga",
-  description: "Game Ular tangga dengan Truth or Dare untuk melatih kepercayaan diri",
+  title: "Tangga Berani",
+  description: "Game Digital Melatih Kepercayaan Diri",
 };
 
 export default function RootLayout({ children }) {

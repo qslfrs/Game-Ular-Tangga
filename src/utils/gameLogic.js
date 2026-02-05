@@ -1,31 +1,29 @@
-import { truthList, dareList } from './content';
-
 export const generateBoardConfig = () => {
   const config = { 
     snakes: {}, 
     ladders: {}, 
-    truthTiles: [], 
-    dareTiles: []   
+    truthTiles: [],      // Bintang
+    dareTiles: [],       // Api
+    reflectionTiles: []  // Bibit
   };
+  
   const usedTiles = new Set([1, 100]);
 
-  // 1. Plot Truth & Dare (Masing-masing 6 titik)
-  while(config.truthTiles.length < 6) {
-    let tile = Math.floor(Math.random() * 90) + 5; // Hindari start/finish
-    if(!config.truthTiles.includes(tile) && !usedTiles.has(tile)) {
-      config.truthTiles.push(tile);
-      usedTiles.add(tile);
-    }
-  }
-  while(config.dareTiles.length < 6) {
-    let tile = Math.floor(Math.random() * 90) + 5;
-    if(!config.dareTiles.includes(tile) && !usedTiles.has(tile)) {
-      config.dareTiles.push(tile);
-      usedTiles.add(tile);
-    }
-  }
+  const getRandomTile = () => {
+    let tile;
+    do {
+      tile = Math.floor(Math.random() * 90) + 5;
+    } while (usedTiles.has(tile));
+    usedTiles.add(tile);
+    return tile;
+  };
 
-  // 2. Plot Tangga (Minimalis)
+  // Plot masing-masing 5 titik simbol
+  for (let i = 0; i < 5; i++) config.truthTiles.push(getRandomTile());
+  for (let i = 0; i < 5; i++) config.dareTiles.push(getRandomTile());
+  for (let i = 0; i < 5; i++) config.reflectionTiles.push(getRandomTile());
+
+  // Plot Tangga (5 buah)
   let lCount = 0;
   while (lCount < 5) {
     let start = Math.floor(Math.random() * 70) + 2;
@@ -37,7 +35,7 @@ export const generateBoardConfig = () => {
     }
   }
 
-  // 3. Plot Ular
+  // Plot Ular (5 buah)
   let sCount = 0;
   while (sCount < 5) {
     let head = Math.floor(Math.random() * 80) + 15;

@@ -1,5 +1,5 @@
 "use client";
-export default function ActionModal({ isOpen, type, content, onClose }) {
+export default function ChallengeModal({ isOpen, type, content, onClose }) {
   if (!isOpen) return null;
   const themes = {
     truth: { title: "KARTU KEJUJURAN", icon: "⭐", color: "bg-blue-600" },

@@ -1,4 +1,4 @@
-export default function HomeView({ onStart, onAbout }) {
+export default function HomeScreen({ onStart, onAbout }) {
   return (
     <div className="bg-white p-12 rounded-[40px] shadow-xl text-center max-w-sm w-full border-b-8 border-blue-500">
       <h1 className="text-4xl font-black text-blue-600 mb-2">TANGGA BERANI</h1>

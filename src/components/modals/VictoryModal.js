@@ -1,5 +1,5 @@
 "use client";
-export default function WinModal({ isOpen, winnerId, onContinue }) {
+export default function VictoryModal({ isOpen, winnerId, onContinue }) {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">

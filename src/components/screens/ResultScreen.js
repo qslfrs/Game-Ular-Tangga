@@ -1,4 +1,4 @@
-export default function PostGameView({ onNext }) {
+export default function ResultScreen({ onNext }) {
   return (
     <div className="bg-white p-10 rounded-[40px] shadow-xl text-center max-w-sm">
       <h2 className="text-2xl font-bold text-blue-600 mb-4">Refleksi Diri</h2>

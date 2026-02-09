@@ -1,4 +1,4 @@
-export default function AboutView({ onBack }) {
+export default function AboutScreen({ onBack }) {
   return (
     <div className="bg-white p-10 rounded-[40px] shadow-xl max-w-md">
       <h2 className="text-2xl font-bold mb-4 text-blue-600">Tentang Game Ini</h2>

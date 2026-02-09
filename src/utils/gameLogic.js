@@ -7,12 +7,12 @@ export const generateBoardConfig = () => {
     reflectionTiles: []  // Bibit
   };
   
-  const usedTiles = new Set([1, 100]);
+  const usedTiles = new Set([1, 70]);
 
   const getRandomTile = () => {
     let tile;
     do {
-      tile = Math.floor(Math.random() * 90) + 5;
+      tile = Math.floor(Math.random() * 60) + 5;
     } while (usedTiles.has(tile));
     usedTiles.add(tile);
     return tile;
@@ -28,7 +28,7 @@ export const generateBoardConfig = () => {
   while (lCount < 5) {
     let start = Math.floor(Math.random() * 70) + 2;
     let end = start + Math.floor(Math.random() * 20) + 10;
-    if (end < 99 && !usedTiles.has(start) && !usedTiles.has(end)) {
+    if (end < 69 && !usedTiles.has(start) && !usedTiles.has(end)) {
       config.ladders[start] = end;
       usedTiles.add(start); usedTiles.add(end);
       lCount++;
@@ -38,7 +38,7 @@ export const generateBoardConfig = () => {
   // Plot Ular (5 buah)
   let sCount = 0;
   while (sCount < 5) {
-    let head = Math.floor(Math.random() * 80) + 15;
+    let head = Math.floor(Math.random() * 50) + 15;
     let tail = head - (Math.floor(Math.random() * 20) + 10);
     if (tail > 2 && !usedTiles.has(head) && !usedTiles.has(tail)) {
       config.snakes[head] = tail;

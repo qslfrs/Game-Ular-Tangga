@@ -31,7 +31,7 @@ export default function Home() {
     let curr = playerPositions[id];
     for (let i = 1; i <= steps; i++) {
       curr++;
-      if (curr >= 100) { curr = 100; break; }
+      if (curr >= 70) { curr = 70; break; }
       setPlayerPositions(p => ({ ...p, [id]: curr }));
       await new Promise(r => setTimeout(r, 200));
     }
@@ -46,7 +46,7 @@ export default function Home() {
     }
     setPlayerPositions(p => ({ ...p, [id]: final }));
 
-    if (final === 100) {
+    if (final === 70) {
       setWinner(id);
     } else if (config.truthTiles.includes(final)) {
       setModal({ isOpen: true, type: "truth", content: truthList[Math.floor(Math.random() * truthList.length)] });

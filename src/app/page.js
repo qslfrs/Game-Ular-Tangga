@@ -2,7 +2,17 @@
 import { useState } from "react";
 import { generateBoardConfig } from "@/utils/gameLogic";
 import { truthList, dareList, reflectionList } from "@/utils/content";
-import GameBoard from "@/components/GameBoard";
+
+// Import Semua View
+import HomeView from "@/components/views/HomeView";
+import AboutView from "@/components/views/AboutView";
+import AgreementView from "@/components/views/AgreementView";
+import SetupView from "@/components/views/SetupView";
+import PlayingView from "@/components/views/PlayingView";
+import PostGameView from "@/components/views/PostGameView";
+import ThanksView from "@/components/views/ThanksView";
+
+// Import Modals
 import ActionModal from "@/components/ActionModal";
 import WinModal from "@/components/WinModal";
 
@@ -18,6 +28,7 @@ export default function Home() {
   const [modal, setModal] = useState({ isOpen: false, type: "", content: "" });
   const [winner, setWinner] = useState(null);
 
+  // --- LOGIKA GAME ---
   const startGame = () => {
     const newConfig = generateBoardConfig();
     setConfig(newConfig);
@@ -72,80 +83,35 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-800">
       
-      {gameState === "HOME" && (
-        <div className="bg-white p-12 rounded-[40px] shadow-xl text-center max-w-sm w-full border-b-8 border-blue-500">
-          <h1 className="text-4xl font-black text-blue-600 mb-2">TANGGA BERANI</h1>
-          <p className="text-slate-400 mb-10 font-medium">Game Digital Melatih Kepercayaan Diri</p>
-          <button onClick={() => setGameState("AGREEMENT")} className="w-full bg-blue-600 text-white py-5 rounded-3xl font-bold mb-4">Mulai Bermain</button>
-          <button onClick={() => setGameState("ABOUT")} className="w-full bg-slate-100 text-slate-600 py-5 rounded-3xl font-bold">Tentang Game</button>
-        </div>
-      )}
-
-      {gameState === "ABOUT" && (
-        <div className="bg-white p-10 rounded-[40px] shadow-xl max-w-md">
-          <h2 className="text-2xl font-bold mb-4 text-blue-600">Tentang Game Ini</h2>
-          <p className="text-slate-600 mb-8 leading-relaxed text-sm">Tangga Berani adalah media BK untuk melatih keberanian dan kepercayaan diri melalui tantangan reflektif.</p>
-          <button onClick={() => setGameState("HOME")} className="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold">KEMBALI</button>
-        </div>
-      )}
-
-      {gameState === "AGREEMENT" && (
-        <div className="bg-white p-10 rounded-[40px] shadow-xl max-w-sm">
-          <h2 className="text-2xl font-bold mb-6">Kesepakatan</h2>
-          <div className="space-y-3 mb-8 text-sm">
-             <p>✅ Bermain dengan jujur.</p>
-             <p>✅ Tidak ada jawaban salah.</p>
-             <p>✅ Boleh melewati pertanyaan.</p>
-          </div>
-          <label className="flex items-center gap-3 mb-8 p-4 bg-blue-50 rounded-2xl cursor-pointer">
-            <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} className="w-5 h-5" />
-            <span className="font-bold text-blue-700">Saya siap bermain</span>
-          </label>
-          <button disabled={!agreed} onClick={() => setGameState("SETUP")} className={`w-full py-5 rounded-3xl font-bold ${agreed ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}`}>Masuk ke Game</button>
-        </div>
-      )}
-
-      {gameState === "SETUP" && (
-        <div className="bg-white p-10 rounded-[40px] shadow-xl text-center">
-          <h2 className="text-xl font-bold mb-8 text-slate-400 uppercase tracking-widest">Pilih Jumlah Pemain</h2>
-          <div className="flex gap-4 mb-10">
-            {[2, 4, 6].map(n => (
-              <button key={n} onClick={() => setPlayerCount(n)} className={`w-16 h-16 rounded-2xl text-xl font-black transition-all ${playerCount === n ? 'bg-blue-600 text-white scale-110' : 'bg-slate-100 text-slate-400'}`}>{n}</button>
-            ))}
-          </div>
-          <button onClick={startGame} className="w-full bg-green-500 text-white py-5 rounded-3xl font-bold shadow-lg">MULAI SEKARANG</button>
-        </div>
-      )}
-
+      {gameState === "HOME" && <HomeView onStart={() => setGameState("AGREEMENT")} onAbout={() => setGameState("ABOUT")} />}
+      {gameState === "ABOUT" && <AboutView onBack={() => setGameState("HOME")} />}
+      {gameState === "AGREEMENT" && <AgreementView agreed={agreed} setAgreed={setAgreed} onNext={() => setGameState("SETUP")} />}
+      {gameState === "SETUP" && <SetupView playerCount={playerCount} setPlayerCount={setPlayerCount} onStart={startGame} />}
+      
       {gameState === "PLAYING" && config && (
-        <div className="flex flex-col lg:flex-row gap-8 items-center">
-          <GameBoard config={config} playerPositions={playerPositions} />
-          <div className="bg-white p-8 rounded-[40px] shadow-xl w-64 text-center">
-            <div className="w-full py-3 rounded-xl text-white font-bold mb-4" style={{ backgroundColor: ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"][turn-1] }}>PLAYER {turn}</div>
-            <div className="text-5xl font-black mb-6">{diceValue || "?"}</div>
-            <button onClick={handleRoll} disabled={isRolling || modal.isOpen} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">{isRolling ? "..." : "ROLL"}</button>
-          </div>
-        </div>
+        <PlayingView 
+          config={config} 
+          playerPositions={playerPositions} 
+          turn={turn} 
+          diceValue={diceValue} 
+          handleRoll={handleRoll} 
+          isRolling={isRolling} 
+          modalOpen={modal.isOpen} 
+        />
       )}
 
-      {gameState === "REFLECTION_QR" && (
-        <div className="bg-white p-10 rounded-[40px] shadow-xl text-center max-w-sm">
-          <h2 className="text-2xl font-bold text-blue-600 mb-4">Refleksi Diri</h2>
-          <div className="w-40 h-40 bg-slate-100 mx-auto mb-6 flex items-center justify-center border-2 border-dashed border-slate-300">QR CODE 1</div>
-          <button onClick={() => setGameState("THANKS")} className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Lanjut</button>
-        </div>
-      )}
-
+      {gameState === "POSTGAME" && <PostGameView onNext={() => setGameState("THANKS")} />}
+      
       {gameState === "THANKS" && (
-        <div className="bg-white p-10 rounded-[40px] shadow-xl text-center">
-          <h1 className="text-5xl mb-4">🌟</h1>
-          <h2 className="text-2xl font-bold mb-8">Terima Kasih!</h2>
-          <button onClick={() => {setGameState("HOME"); setAgreed(false); setWinner(null);}} className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold">Main Lagi</button>
-        </div>
+        <ThanksView onPlayAgain={() => {
+          setGameState("HOME"); 
+          setAgreed(false); 
+          setWinner(null);
+        }} />
       )}
 
       <ActionModal {...modal} onClose={() => {setModal({...modal, isOpen: false}); setTurn(t => t >= playerCount ? 1 : t + 1);}} />
-      <WinModal isOpen={!!winner} winnerId={winner} onContinue={() => {setWinner(null); setGameState("REFLECTION_QR");}} />
+      <WinModal isOpen={!!winner} winnerId={winner} onContinue={() => {setWinner(null); setGameState("POSTGAME");}} />
 
     </main>
   );

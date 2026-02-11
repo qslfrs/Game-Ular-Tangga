@@ -81,7 +81,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-800">
+    <main className="min-h-screen bg-slate-50 flex items-center justify-center font-sans text-slate-800">
       
       {gameState === "HOME" && <HomeView onStart={() => setGameState("AGREEMENT")} onAbout={() => setGameState("ABOUT")} />}
       {gameState === "ABOUT" && <AboutView onBack={() => setGameState("HOME")} />}

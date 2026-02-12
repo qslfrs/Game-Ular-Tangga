@@ -1,4 +1,4 @@
-export default function AboutView({ onBack }) {
+export default function AboutScreen({ onBack }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex items-center justify-center bg-cover bg-center overflow-hidden"

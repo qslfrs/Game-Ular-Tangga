@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo } from 'react';
 
-const GameBoard = ({ config, playerPositions }) => {
+const Board = ({ config, playerPositions }) => {
   const board = useMemo(() => {
     const tempBoard = [];
     for (let r = 6; r >= 0; r--) {
@@ -45,7 +45,7 @@ const GameBoard = ({ config, playerPositions }) => {
         })}
         {Object.entries(config.snakes).map(([s, e]) => {
           const from = getTileCoords(parseInt(s)); const to = getTileCoords(parseInt(e));
-          return <path key={s} d={`M ${from.x} ${from.y} Q ${(from.x+to.x)/2 + 5} ${(from.y+to.y)/2 - 5} ${to.x} ${to.y}`} stroke="#166534" strokeWidth="1.5" fill="none" strokeDasharray="2" />;
+          return <path key={s} d={`M ${from.x} ${from.y} Q ${(from.x + to.x) / 2 + 5} ${(from.y + to.y) / 2 - 5} ${to.x} ${to.y}`} stroke="#166534" strokeWidth="1.5" fill="none" strokeDasharray="2" />;
         })}
       </svg>
 
@@ -53,11 +53,11 @@ const GameBoard = ({ config, playerPositions }) => {
         const coords = getTileCoords(pos);
         return (
           <div key={id} className="absolute w-4 h-4 md:w-7 md:h-7 rounded-full border-2 border-white shadow-lg transition-all duration-500"
-               style={{ left: `${coords.x}%`, top: `${coords.y}%`, transform: 'translate(-50%, -50%)', backgroundColor: getPlayerColor(id), zIndex: 50 }} />
+            style={{ left: `${coords.x}%`, top: `${coords.y}%`, transform: 'translate(-50%, -50%)', backgroundColor: getPlayerColor(id), zIndex: 50 }} />
         );
       })}
     </div>
   );
 };
 
-export default GameBoard;
+export default Board;

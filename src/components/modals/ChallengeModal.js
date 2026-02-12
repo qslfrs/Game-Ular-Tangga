@@ -1,10 +1,10 @@
 "use client";
-export default function ActionModal({ isOpen, type, content, onClose }) {
+export default function ChallengeModal({ isOpen, type, content, onClose }) {
   if (!isOpen) return null;
   const themes = {
-    truth: { title: "KARTU KEJUJURAN", icon: "⭐", color: "bg-blue-600" },
-    dare: { title: "KARTU TANTANGAN", icon: "🔥", color: "bg-red-500" },
-    reflection: { title: "KARTU REFLEKSI", icon: "🌱", color: "bg-green-500" }
+    truth: { title: "PENGUNGKAPAN DIRI", icon: "⭐", color: "bg-[#FEDB18]-600" },
+    dare: { title: "LATIHAN KEBERANIAN", icon: "🔥", color: "bg-[#D77AFC]-500" },
+    reflection: { title: "PESAN POSITIF", icon: "🌱", color: "bg-[#B0E561]-500" }
   };
   const theme = themes[type] || themes.truth;
 

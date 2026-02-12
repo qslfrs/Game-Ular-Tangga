@@ -1,4 +1,4 @@
-export default function HomeView({ onStart, onAbout }) {
+export default function HomeScreen({ onStart, onAbout }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex flex-col items-center justify-between py-10 px-4 bg-cover bg-center bg-no-repeat overflow-hidden"

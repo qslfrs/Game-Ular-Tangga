@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function PostGameView({ onNext }) {
+export default function ResultScreen({ onNext }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex items-center justify-center bg-cover bg-center overflow-hidden"

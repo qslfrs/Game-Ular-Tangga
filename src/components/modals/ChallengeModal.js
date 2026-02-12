@@ -2,9 +2,9 @@
 export default function ChallengeModal({ isOpen, type, content, onClose }) {
   if (!isOpen) return null;
   const themes = {
-    truth: { title: "PENGUNGKAPAN DIRI", icon: "⭐", color: "bg-[#FEDB18]-600" },
-    dare: { title: "LATIHAN KEBERANIAN", icon: "🔥", color: "bg-[#D77AFC]-500" },
-    reflection: { title: "PESAN POSITIF", icon: "🌱", color: "bg-[#B0E561]-500" }
+    truth: { title: "PENGUNGKAPAN DIRI", icon: "⭐", color: "bg-[#FEDB18]" },
+    dare: { title: "LATIHAN KEBERANIAN", icon: "🔥", color: "bg-[#D77AFC]" },
+    reflection: { title: "PESAN POSITIF", icon: "🌱", color: "bg-[#B0E561]" }
   };
   const theme = themes[type] || themes.truth;
 

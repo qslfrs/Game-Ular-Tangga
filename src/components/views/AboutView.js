@@ -13,7 +13,7 @@ export default function AboutView({ onBack }) {
         </div>
 
         {/* CARD UTAMA */}
-        <div className="relative z-10 w-full bg-[#FFF9F0] border-[10px] border-[#6BA3BE] rounded-[50px] shadow-2xl overflow-hidden">
+        <div className="relative z-10 w-full bg-[#FAF3E9] border-[10px] border-[#F2DECF] rounded-[50px] shadow-2xl overflow-hidden">
           
           <div className="relative z-20 p-8 md:p-12">
             

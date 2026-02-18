@@ -25,84 +25,125 @@ export const useGameEngine = () => {
     const [modal, setModal] = useState({ isOpen: false, type: "", content: "" });
     const [winner, setWinner] = useState(null);
 
+    // 1. Inisialisasi Game
     const startGame = useCallback(() => {
         const newConfig = generateBoardConfig();
         setConfig(newConfig);
         const pos = {};
         for (let i = 1; i <= playerCount; i++) pos[i] = 1;
         setPlayerPositions(pos);
-        setGameState(GAME_STATES.PLAYING);
         setTurn(1);
-        setIsMoving(false);
-        setWinner(null);
+        setGameState(GAME_STATES.PLAYING);
     }, [playerCount]);
 
+    // 2. Helper: Ganti Giliran
     const nextTurn = useCallback(() => {
-        setTurn(t => t >= playerCount ? 1 : t + 1);
+        setTurn(prev => (prev % playerCount) + 1);
     }, [playerCount]);
 
-    const handleModalClose = useCallback(() => {
-        setModal(prev => ({ ...prev, isOpen: false }));
-        nextTurn();
-    }, [nextTurn]);
+    // 3. Helper: Cek Tipe Bintang
+    const checkSpecialTile = (position) => {
+        if (config.truthTiles.includes(position)) return "truth";
+        if (config.dareTiles.includes(position)) return "dare";
+        if (config.reflectionTiles.includes(position)) return "reflection";
+        return null;
+    };
 
-    const movePlayer = async (id, steps) => {
-        let curr = playerPositions[id];
+    // 4. Logic Utama Gerakan Ular/Tangga
+    const handleSnakeOrLadder = async (playerId, position) => {
+        const targetLadder = config.ladders[position];
+        const targetSnake = config.snakes[position];
+        const target = targetLadder || targetSnake;
 
-        // Animate movement tile by tile
-        for (let i = 1; i <= steps; i++) {
-            curr++;
-            if (curr >= BOARD_SIZE) {
-                curr = BOARD_SIZE;
-                break;
+        if (target) {
+            await new Promise(r => setTimeout(r, ANIMATION_SPEED_JUMP));
+            setPlayerPositions(prev => ({ ...prev, [playerId]: target }));
+            
+            // Setelah pindah karena ular/tangga, cek apakah di tujuan ada bintang?
+            const endSpecial = checkSpecialTile(target);
+            if (endSpecial) {
+                triggerModal(endSpecial);
+                return true; // Menandakan proses berhenti karena modal muncul
             }
-            setPlayerPositions(p => ({ ...p, [id]: curr }));
+        }
+        return false;
+    };
+
+    // 5. Helper: Munculkan Modal
+    const triggerModal = (type) => {
+        const list = type === "truth" ? truthList : type === "dare" ? dareList : reflectionList;
+        setModal({
+            isOpen: true,
+            type: type,
+            content: list[Math.floor(Math.random() * list.length)]
+        });
+    };
+
+    // 6. Logic Utama Pergerakan Dadu
+    const movePlayer = async (playerId, steps) => {
+        setIsMoving(true);
+        let currentPos = playerPositions[playerId];
+        let targetPos = Math.min(currentPos + steps, BOARD_SIZE);
+
+        // Animasi gerak satu per satu kotak
+        for (let i = currentPos + 1; i <= targetPos; i++) {
+            setPlayerPositions(prev => ({ ...prev, [playerId]: i }));
             await new Promise(r => setTimeout(r, ANIMATION_SPEED_MOVE));
         }
 
-        let final = curr;
-
-        // Check for Ladders
-        if (config.ladders[final]) {
-            await new Promise(r => setTimeout(r, ANIMATION_SPEED_JUMP));
-            final = config.ladders[final];
-            setPlayerPositions(p => ({ ...p, [id]: final }));
-        }
-        // Check for Snakes
-        else if (config.snakes[final]) {
-            await new Promise(r => setTimeout(r, ANIMATION_SPEED_JUMP));
-            final = config.snakes[final];
-            setPlayerPositions(p => ({ ...p, [id]: final }));
+        if (targetPos === BOARD_SIZE) {
+            setWinner(playerId);
+            setIsMoving(false);
+            return;
         }
 
-        // Check Win Condition or Special Tiles
-        if (final === BOARD_SIZE) {
-            setWinner(id);
-        } else if (config.truthTiles.includes(final)) {
-            setModal({ isOpen: true, type: "truth", content: truthList[Math.floor(Math.random() * truthList.length)] });
-        } else if (config.dareTiles.includes(final)) {
-            setModal({ isOpen: true, type: "dare", content: dareList[Math.floor(Math.random() * dareList.length)] });
-        } else if (config.reflectionTiles.includes(final)) {
-            setModal({ isOpen: true, type: "reflection", content: reflectionList[Math.floor(Math.random() * reflectionList.length)] });
+        // Langkah A: Cek apakah mendarat di Bintang
+        const specialType = checkSpecialTile(targetPos);
+        if (specialType) {
+            triggerModal(specialType);
+            // Pengecekan ular/tangga akan dilanjutkan di handleModalClose
+        } else {
+            // Langkah B: Jika tidak ada bintang, cek ular/tangga
+            const modalTriggeredAfterJump = await handleSnakeOrLadder(playerId, targetPos);
+            if (!modalTriggeredAfterJump) {
+                nextTurn();
+            }
+        }
+        setIsMoving(false);
+    };
+
+    // 7. Handler: Tutup Modal (Melanjutkan logic yang tertunda)
+    const handleModalClose = useCallback(async () => {
+        setModal(prev => ({ ...prev, isOpen: false }));
+        
+        const currentPos = playerPositions[turn];
+        
+        // Cek apakah posisi setelah bintang adalah awal tangga/kepala ular
+        const targetLadder = config.ladders[currentPos];
+        const targetSnake = config.snakes[currentPos];
+        
+        if (targetLadder || targetSnake) {
+            setIsMoving(true);
+            await handleSnakeOrLadder(turn, currentPos);
+            setIsMoving(false);
+            nextTurn();
         } else {
             nextTurn();
         }
-    };
+    }, [turn, playerPositions, config, nextTurn]);
 
+    // 8. Handler: Roll Dadu
     const handleRoll = async () => {
         if (isRolling || isMoving || modal.isOpen || winner) return;
 
         setIsRolling(true);
-        // Roll animation delay
         await new Promise(r => setTimeout(r, ANIMATION_SPEED_ROLL));
 
         const val = Math.floor(Math.random() * DICE_MAX) + 1;
         setDiceValue(val);
         setIsRolling(false);
 
-        setIsMoving(true);
         await movePlayer(turn, val);
-        setIsMoving(false);
     };
 
     const resetGame = () => {
@@ -111,6 +152,7 @@ export const useGameEngine = () => {
         setWinner(null);
         setTurn(1);
         setIsMoving(false);
+        setDiceValue(0);
     };
 
     return {

@@ -15,12 +15,27 @@ const Board = ({ config, playerPositions }) => {
     return tempBoard;
   }, []);
 
-  // Fungsi kalkulasi koordinat untuk SVG Garis & Pion
   const getTileCoords = (tileNum) => {
-    let r = Math.floor((tileNum - 1) / 10);
-    let c = (tileNum - 1) % 10;
-    if (r % 2 !== 0) c = 9 - c;
-    return { x: (c * 10) + 5, y: ((6 - r) * (14.28)) + 7.14 };
+    const totalRows = 7;
+    const totalCols = 10;
+    
+    // Hitung baris (0 adalah baris paling bawah)
+    const r = Math.floor((tileNum - 1) / totalCols);
+    
+    // Hitung kolom dasar
+    let c = (tileNum - 1) % totalCols;
+    
+    // Logika Z-Pattern: Baris ganjil (11-20, 31-40, dst) arahnya terbalik
+    if (r % 2 !== 0) {
+      c = (totalCols - 1) - c;
+    }
+
+    // Hitung titik tengah kotak dalam persentase (0-100)
+    // (Kolom / Total) * 100 + (Setengah lebar kotak)
+    return { 
+      x: (c * (100 / totalCols)) + (100 / totalCols / 2), 
+      y: ((totalRows - 1 - r) * (100 / totalRows)) + (100 / totalRows / 2)
+    };
   };
 
   const getPlayerColor = (id) => ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"][id - 1];

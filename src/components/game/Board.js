@@ -41,7 +41,7 @@ const Board = ({ config, playerPositions }) => {
   const getPlayerColor = (id) => ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"][id - 1];
 
   return (
-    <div className="relative w-[340px] h-[280px] md:w-[650px] md:h-[480px] bg-[#FDF8F2]/90 backdrop-blur-sm border-[10px] border-white shadow-2xl rounded-[40px] overflow-hidden p-2">
+    <div className="relative w-[320px] h-[320px] md:w-[550px] md:h-[550px] bg-[#FDF8F2]/90 backdrop-blur-sm border-[10px] border-white shadow-2xl rounded-[40px] overflow-hidden p-2">
       
       {/* GRID KOTAK */}
       <div className="absolute inset-2 grid grid-cols-10 grid-rows-7 gap-1">

@@ -36,7 +36,7 @@ export default function GameScreen({ config, playerPositions, turn, diceValue, h
           disabled={isRolling || isMoving || modalOpen}
           className="w-full bg-gradient-to-b from-[#FFB347] via-[#FF8C00] to-[#E65C00] text-white py-4 rounded-2xl font-black text-lg shadow-[0_5px_0_rgb(139,69,19)] active:translate-y-[5px] active:shadow-none transition-all disabled:opacity-50 disabled:grayscale uppercase"
         >
-          {isRolling ? "MEMUTAR..." : "KOCOK DADU"}
+          {isRolling ? "ROLLING..." : isMoving ? "MOVING..." : "ROLL"}
         </button>
       </div>
     </div>

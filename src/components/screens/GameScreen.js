@@ -6,7 +6,7 @@ export default function GameScreen({ config, playerPositions, turn, diceValue, h
   return (
     <div 
       className="fixed inset-0 w-full h-full flex flex-col lg:flex-row gap-6 items-center justify-center bg-cover bg-center p-6"
-      style={{ backgroundImage: "url('/Bg-Board.png')" }} 
+      style={{ backgroundImage: "url('/Bg-Board.webp')" }} 
     >
       {/* Container Papan */}
       <div className="relative order-2 lg:order-1">

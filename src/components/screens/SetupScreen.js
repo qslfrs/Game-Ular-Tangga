@@ -4,7 +4,7 @@ export default function SetupView({ playerCount, setPlayerCount, onStart }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex items-center justify-center bg-cover bg-center overflow-hidden"
-      style={{ backgroundImage: "url('/Bg-Setup.png')" }}
+      style={{ backgroundImage: "url('/Bg-Setup.webp')" }}
     >
       {/* Container Utama */}
       <div className="relative w-full max-w-4xl px-6 flex flex-col items-center">

@@ -2,7 +2,7 @@ export default function HomeScreen({ onStart, onAbout }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex flex-col items-center justify-between py-10 px-4 bg-cover bg-center bg-no-repeat overflow-hidden"
-      style={{ backgroundImage: "url('/Bg-Home.png')" }}
+      style={{ backgroundImage: "url('/Bg-Home.webp')" }}
     >
       {/* Overlay Gelap Tipis agar teks lebih terbaca (Opsional) */}
       <div className="absolute inset-0 bg-black/10" />
@@ -29,17 +29,17 @@ export default function HomeScreen({ onStart, onAbout }) {
       </div>
 
       {/* Bagian Bawah: Tombol-tombol */}
-      <div className="relative z-10 flex flex-col items-center gap-4 w-full max-w-xs">
+      <div className="relative z-10 flex flex-col items-center gap-4 w-full ">
         <button 
           onClick={onStart}
-          className="group relative w-full bg-gradient-to-b from-orange-400 to-orange-600 text-white py-4 rounded-2xl font-black text-xl shadow-[0_6px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[6px] transition-all flex items-center justify-center gap-2"
+          className="group relative flex items-center gap-3 bg-gradient-to-b from-[#FFB347] via-[#FF8C00] to-[#E65C00] text-white px-12 py-4 rounded-full font-black text-2xl md:text-3xl shadow-[0_8px_0_rgb(139,69,19)] hover:translate-y-[-2px] hover:shadow-[0_10px_0_rgb(139,69,19)] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-wider"
         >
           <span className="text-2xl">▶</span> MULAI BERMAIN
         </button>
 
         <button 
           onClick={onAbout}
-          className="w-full bg-white/90 hover:bg-white text-slate-700 py-3 rounded-2xl font-bold text-sm shadow-lg transition-all"
+          className="w-full bg-white/90 hover:bg-white text-slate-700 py-3 rounded-2xl font-bold text-sm shadow-lg transition-all max-w-xs"
         >
           Tentang Game
         </button>

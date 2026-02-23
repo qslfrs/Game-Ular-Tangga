@@ -8,7 +8,7 @@ export default function ChallengeModal({ isOpen, type, content, onClose }) {
       title: "PENGUNGKAPAN DIRI", 
       icon: "/yellow-star.png", 
       color: "bg-[#FEDB18]", 
-      textColor: "text-[#B8860B]" // Warna teks gelap agar kontras dengan kuning
+      textColor: "text-white" 
     },
     dare: { 
       title: "LATIHAN KEBERANIAN", 
@@ -20,7 +20,7 @@ export default function ChallengeModal({ isOpen, type, content, onClose }) {
       title: "PESAN POSITIF", 
       icon: "/green-star.png", 
       color: "bg-[#B0E561]", 
-      textColor: "text-[#2D5A8E]" // Biru tua khas game kamu
+      textColor: "text-white" 
     }
   };
 

@@ -2,7 +2,7 @@ export default function AboutScreen({ onBack }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex items-center justify-center bg-cover bg-center overflow-hidden"
-      style={{ backgroundImage: "url('/Bg-About.png')" }}
+      style={{ backgroundImage: "url('/Bg-About.webp')" }}
     >
       {/* Container Utama */}
       <div className="relative w-full max-w-5xl px-6 flex flex-col items-center">
@@ -77,10 +77,10 @@ export default function AboutScreen({ onBack }) {
             </div>
 
             {/* Tombol Kembali di Bawah */}
-            <div className="mt-12 flex justify-center">
+            <div className="mt-10 flex justify-center">
               <button 
                 onClick={onBack}
-                className="bg-[#FF8C00] hover:bg-[#E65C00] text-white px-14 py-3 rounded-full font-black text-xl shadow-[0_6px_0_rgb(139,69,19)] active:shadow-none active:translate-y-[6px] transition-all uppercase"
+                className="group relative flex items-center gap-3 bg-gradient-to-b from-[#FFB347] via-[#FF8C00] to-[#E65C00] text-white px-12 py-4 rounded-full font-black text-2xl md:text-3xl shadow-[0_8px_0_rgb(139,69,19)] hover:translate-y-[-2px] hover:shadow-[0_10px_0_rgb(139,69,19)] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-wider"
               >
                 KEMBALI
               </button>

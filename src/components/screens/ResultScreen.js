@@ -4,7 +4,7 @@ export default function ResultScreen({ onNext }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex items-center justify-center bg-cover bg-center overflow-hidden"
-      style={{ backgroundImage: "url('/Bg-PostGame.png')" }} 
+      style={{ backgroundImage: "url('/Bg-PostGame.webp')" }} 
     >
       {/* Container Utama */}
       <div className="relative w-full max-w-4xl px-6 flex flex-col items-center">
@@ -33,7 +33,7 @@ export default function ResultScreen({ onNext }) {
           {/* TOMBOL LANJUT */}
           <button 
             onClick={onNext}
-            className="group relative bg-[#8CC63F] hover:bg-[#7AB52E] text-white px-20 py-4 rounded-full font-black text-2xl shadow-[0_6px_0_rgb(58,102,23)] active:translate-y-[6px] active:shadow-none transition-all flex items-center justify-center min-w-[240px]"
+            className="group relative flex items-center justify-center gap-3 bg-gradient-to-b from-[#A4D44D] via-[#8CC63F] to-[#7AB52E] text-white px-16 py-4 rounded-full font-black text-2xl shadow-[0_8px_0_rgb(58,102,23)] hover:translate-y-[-2px] hover:shadow-[0_10px_0_rgb(58,102,23)] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest"
           >
             Lanjut
           </button>

@@ -4,7 +4,7 @@ export default function ThanksView({ onPlayAgain }) {
   return (
     <div 
       className="fixed inset-0 w-full h-full flex items-center justify-center bg-cover bg-center overflow-hidden"
-      style={{ backgroundImage: "url('/Bg-Thanks.png')" }} // Menggunakan background desa pixel art
+      style={{ backgroundImage: "url('/Bg-Thanks.webp')" }} // Menggunakan background desa pixel art
     >
       {/* Container Utama */}
       <div className="relative w-full max-w-4xl px-6 flex flex-col items-center">

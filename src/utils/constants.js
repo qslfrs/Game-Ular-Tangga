@@ -17,10 +17,15 @@ export const PLAYER_COUNT_MIN = 2;
 export const PLAYER_COUNT_MAX = 6;
 export const PLAYER_COUNTS_ALLOWED = [2, 4, 6];
 
+export const TOTAL_DAYS = 6;
+export const DAY_UNLOCK_DELAY_HOURS = 18;
+export const DAY_UNLOCK_DELAY_MS = DAY_UNLOCK_DELAY_HOURS * 60 * 60 * 1000;
+
 export const GAME_STATES = {
     HOME: 'HOME',
     ABOUT: 'ABOUT',
     AGREEMENT: 'AGREEMENT',
+    DAY_SELECT: 'DAY_SELECT',
     SETUP: 'SETUP',
     PLAYING: 'PLAYING',
     POSTGAME: 'POSTGAME',

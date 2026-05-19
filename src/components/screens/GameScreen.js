@@ -1,6 +1,6 @@
 import Board from "@/components/game/Board";
 
-export default function GameScreen({ config, playerPositions, turn, diceValue, handleRoll, isRolling, isMoving, modalOpen }) {
+export default function GameScreen({ currentDay, config, playerPositions, turn, diceValue, handleRoll, isRolling, isMoving, modalOpen }) {
   const getPlayerColor = (id) => ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"][id - 1];
 
   return (
@@ -15,6 +15,10 @@ export default function GameScreen({ config, playerPositions, turn, diceValue, h
 
       {/* Panel Kontrol Dadu */}
       <div className="relative z-10 bg-[#FDF8F2]/95 backdrop-blur-sm p-6 rounded-[40px] border-[6px] border-white shadow-xl w-full max-w-[260px] text-center order-1 lg:order-2">
+        <div className="mb-3 bg-[#2D5A8E]/10 rounded-xl py-1 border border-[#2D5A8E]/20">
+          <p className="text-[#2D5A8E] font-black text-xs tracking-wider">HARI D-{currentDay}</p>
+        </div>
+
         <h3 className="text-[#2D5A8E] font-black mb-3 uppercase tracking-widest text-xs">Giliran</h3>
         
         <div

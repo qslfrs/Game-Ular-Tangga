@@ -6,6 +6,7 @@ import { GAME_STATES } from "@/utils/constants";
 import HomeScreen from "@/components/screens/HomeScreen";
 import AboutScreen from "@/components/screens/AboutScreen";
 import AgreementScreen from "@/components/screens/AgreementScreen";
+import DaySelectScreen from "@/components/screens/DaySelectScreen";
 import SetupScreen from "@/components/screens/SetupScreen";
 import GameScreen from "@/components/screens/GameScreen";
 import ResultScreen from "@/components/screens/ResultScreen";
@@ -18,6 +19,12 @@ import VictoryModal from "@/components/modals/VictoryModal";
 export default function Home() {
   const {
     gameState, setGameState,
+    currentDay,
+    daysMeta,
+    allDaysUnlocked,
+    selectDay,
+    resetDayProgress,
+    goToDaySelect,
     playerCount, setPlayerCount,
     agreed, setAgreed,
     config, playerPositions,
@@ -51,20 +58,33 @@ export default function Home() {
         <AgreementScreen
           agreed={agreed}
           setAgreed={setAgreed}
-          onNext={() => setGameState(GAME_STATES.SETUP)}
+          onNext={() => setGameState(GAME_STATES.DAY_SELECT)}
+        />
+      )}
+
+      {gameState === GAME_STATES.DAY_SELECT && (
+        <DaySelectScreen
+          daysMeta={daysMeta}
+          onSelectDay={selectDay}
+          onBack={() => setGameState(GAME_STATES.HOME)}
+          allDaysUnlocked={allDaysUnlocked}
+          onResetProgress={resetDayProgress}
         />
       )}
 
       {gameState === GAME_STATES.SETUP && (
         <SetupScreen
+          currentDay={currentDay}
           playerCount={playerCount}
           setPlayerCount={setPlayerCount}
           onStart={startGame}
+          onBack={goToDaySelect}
         />
       )}
 
       {gameState === GAME_STATES.PLAYING && config && (
         <GameScreen
+          currentDay={currentDay}
           config={config}
           playerPositions={playerPositions}
           turn={turn}
@@ -77,7 +97,10 @@ export default function Home() {
       )}
 
       {gameState === GAME_STATES.POSTGAME && (
-        <ResultScreen onNext={() => setGameState(GAME_STATES.THANKS)} />
+        <ResultScreen
+          currentDay={currentDay}
+          onNext={goToDaySelect}
+        />
       )}
 
       {gameState === GAME_STATES.THANKS && (

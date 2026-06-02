@@ -1,6 +1,7 @@
 "use client";
 import { useGameEngine } from "@/hooks/useGameEngine";
 import { GAME_STATES } from "@/utils/constants";
+import AssetPreloader from "@/components/common/AssetPreloader";
 
 // Import Views
 import HomeScreen from "@/components/screens/HomeScreen";
@@ -42,6 +43,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-800">
+      <AssetPreloader />
 
       {gameState === GAME_STATES.HOME && (
         <HomeScreen

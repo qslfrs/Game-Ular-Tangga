@@ -24,7 +24,9 @@ export const generateBoardConfig = () => {
 
   // 1. Plot Tangga (Bawah ke Atas)
   let lCount = 0;
-  while (lCount < LADDER_COUNT) {
+  let lAttempts = 0;
+  while (lCount < LADDER_COUNT && lAttempts < LADDER_COUNT * 30) {
+    lAttempts++;
     let start = getRandomTile();
     // Pastikan tangga naik ke atas (min 5 kotak, max 20 kotak)
     let end = start + Math.floor(Math.random() * 15) + 5;
@@ -40,7 +42,9 @@ export const generateBoardConfig = () => {
 
   // 2. Plot Ular (Atas ke Bawah)
   let sCount = 0;
-  while (sCount < SNAKE_COUNT) {
+  let sAttempts = 0;
+  while (sCount < SNAKE_COUNT && sAttempts < SNAKE_COUNT * 30) {
+    sAttempts++;
     let start = getRandomTile();
     // Pastikan ular turun ke bawah (min 5 kotak)
     let end = start - (Math.floor(Math.random() * 15) + 5);

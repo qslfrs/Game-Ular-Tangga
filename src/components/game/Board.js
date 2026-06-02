@@ -15,6 +15,12 @@ const Board = ({ config, playerPositions }) => {
     return tempBoard;
   }, []);
 
+  const specialTileSets = useMemo(() => ({
+    truth: new Set(config.truthTiles),
+    dare: new Set(config.dareTiles),
+    reflection: new Set(config.reflectionTiles),
+  }), [config]);
+
   const getTileCoords = (tileNum) => {
     const totalRows = 7;
     const totalCols = 10;
@@ -58,9 +64,9 @@ const Board = ({ config, playerPositions }) => {
             
             {/* Icon Bintang (Jika ada di config) */}
             <div className="w-6 h-6 md:w-10 md:h-10">
-              {config.truthTiles.includes(tile) && <img src="/yellow-star.png" className="w-full h-full object-contain" alt="Truth" />}
-              {config.dareTiles.includes(tile) && <img src="/purple-star.png" className="w-full h-full object-contain" alt="Dare" />}
-              {config.reflectionTiles.includes(tile) && <img src="/green-star.png" className="w-full h-full object-contain" alt="Reflect" />}
+              {specialTileSets.truth.has(tile) && <img src="/yellow-star.png" className="w-full h-full object-contain" alt="Truth" />}
+              {specialTileSets.dare.has(tile) && <img src="/purple-star.png" className="w-full h-full object-contain" alt="Dare" />}
+              {specialTileSets.reflection.has(tile) && <img src="/green-star.png" className="w-full h-full object-contain" alt="Reflect" />}
             </div>
           </div>
         ))}

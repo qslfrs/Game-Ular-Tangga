@@ -1,7 +1,7 @@
 "use client";
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { generateBoardConfig } from '@/utils/boardGenerator';
-import { truthList, dareList, reflectionList } from '@/utils/challengeData';
+import { getChallengeListByDay } from '@/utils/challengeData';
 import {
     BOARD_SIZE,
     DICE_MAX,
@@ -9,8 +9,46 @@ import {
     ANIMATION_SPEED_JUMP,
     ANIMATION_SPEED_ROLL,
     GAME_STATES,
-    PLAYER_COUNT_DEFAULT
+    PLAYER_COUNT_DEFAULT,
+    TOTAL_DAYS,
+    DAY_UNLOCK_DELAY_MS
 } from '@/utils/constants';
+
+const STORAGE_KEY = 'tangga-berani-progress-v1';
+
+const buildDayMeta = (day, now, completedAtByDay) => {
+    if (day === 1) {
+        return {
+            day,
+            unlocked: true,
+            completed: !!completedAtByDay[1],
+            unlockAt: null,
+            remainingMs: 0
+        };
+    }
+
+    const prevCompletedAt = completedAtByDay[day - 1];
+    if (!prevCompletedAt) {
+        return {
+            day,
+            unlocked: false,
+            completed: !!completedAtByDay[day],
+            unlockAt: null,
+            remainingMs: null
+        };
+    }
+
+    const unlockAt = prevCompletedAt + DAY_UNLOCK_DELAY_MS;
+    const remainingMs = Math.max(0, unlockAt - now);
+
+    return {
+        day,
+        unlocked: remainingMs === 0,
+        completed: !!completedAtByDay[day],
+        unlockAt,
+        remainingMs
+    };
+};
 
 export const useGameEngine = () => {
     const [gameState, setGameState] = useState(GAME_STATES.HOME);
@@ -24,6 +62,78 @@ export const useGameEngine = () => {
     const [isMoving, setIsMoving] = useState(false);
     const [modal, setModal] = useState({ isOpen: false, type: "", content: "" });
     const [winner, setWinner] = useState(null);
+    const [currentDay, setCurrentDay] = useState(1);
+    const [completedAtByDay, setCompletedAtByDay] = useState({});
+    const [now, setNow] = useState(Date.now());
+
+    // Ref: mencegah save effect nulis ke localStorage sebelum load effect selesai baca
+    const hasLoaded = useRef(false);
+
+    // Timer hanya aktif saat di layar DAY_SELECT (menghitung countdown unlock hari)
+    useEffect(() => {
+        if (gameState !== GAME_STATES.DAY_SELECT) return;
+        const id = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(id);
+    }, [gameState]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return;
+
+            const parsed = JSON.parse(saved);
+            if (parsed?.completedAtByDay && typeof parsed.completedAtByDay === 'object') {
+                setCompletedAtByDay(parsed.completedAtByDay);
+            }
+            if (parsed?.currentDay && Number.isInteger(parsed.currentDay)) {
+                const day = Math.min(Math.max(parsed.currentDay, 1), TOTAL_DAYS);
+                setCurrentDay(day);
+            }
+        } catch {
+            // no-op
+        }
+        // Tandai bahwa load sudah selesai; save effect boleh mulai menulis
+        hasLoaded.current = true;
+    }, []);
+
+    useEffect(() => {
+        // Tunggu sampai load effect selesai agar tidak overwrite data tersimpan
+        if (!hasLoaded.current || typeof window === 'undefined') return;
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+                currentDay,
+                completedAtByDay
+            })
+        );
+    }, [currentDay, completedAtByDay]);
+
+    const daysMeta = useMemo(() => {
+        const list = [];
+        for (let day = 1; day <= TOTAL_DAYS; day++) {
+            list.push(buildDayMeta(day, now, completedAtByDay));
+        }
+        return list;
+    }, [now, completedAtByDay]);
+
+    const isDayUnlocked = useCallback((day) => {
+        const meta = daysMeta.find(d => d.day === day);
+        return !!meta?.unlocked;
+    }, [daysMeta]);
+
+    const allDaysUnlocked = useMemo(() => daysMeta.every(d => d.unlocked), [daysMeta]);
+
+    const selectDay = useCallback((day) => {
+        const safeDay = Math.min(Math.max(day, 1), TOTAL_DAYS);
+        if (!isDayUnlocked(safeDay)) return false;
+
+        setCurrentDay(safeDay);
+        setGameState(GAME_STATES.SETUP);
+        return true;
+    }, [isDayUnlocked]);
 
     // 1. Inisialisasi Game
     const startGame = useCallback(() => {
@@ -33,6 +143,7 @@ export const useGameEngine = () => {
         for (let i = 1; i <= playerCount; i++) pos[i] = 1;
         setPlayerPositions(pos);
         setTurn(1);
+        setDiceValue(0);
         setGameState(GAME_STATES.PLAYING);
     }, [playerCount]);
 
@@ -71,7 +182,7 @@ export const useGameEngine = () => {
 
     // 5. Helper: Munculkan Modal
     const triggerModal = (type) => {
-        const list = type === "truth" ? truthList : type === "dare" ? dareList : reflectionList;
+        const list = getChallengeListByDay(currentDay, type);
         setModal({
             isOpen: true,
             type: type,
@@ -93,6 +204,10 @@ export const useGameEngine = () => {
 
         if (targetPos === BOARD_SIZE) {
             setWinner(playerId);
+            setCompletedAtByDay(prev => {
+                if (prev[currentDay]) return prev;
+                return { ...prev, [currentDay]: Date.now() };
+            });
             setIsMoving(false);
             return;
         }
@@ -155,9 +270,30 @@ export const useGameEngine = () => {
         setDiceValue(0);
     };
 
+    const resetDayProgress = useCallback(() => {
+        setCompletedAtByDay({});
+        setCurrentDay(1);
+        setWinner(null);
+        setModal({ isOpen: false, type: "", content: "" });
+        setGameState(GAME_STATES.DAY_SELECT);
+    }, []);
+
+    const goToDaySelect = useCallback(() => {
+        setWinner(null);
+        setModal({ isOpen: false, type: "", content: "" });
+        setGameState(GAME_STATES.DAY_SELECT);
+    }, []);
+
     return {
         gameState,
         setGameState,
+        currentDay,
+        setCurrentDay,
+        daysMeta,
+        allDaysUnlocked,
+        selectDay,
+        resetDayProgress,
+        goToDaySelect,
         playerCount,
         setPlayerCount,
         agreed,

@@ -1,4 +1,5 @@
 import Board from "@/components/game/Board";
+import DiceRoller from "@/components/game/DiceRoller";
 
 export default function GameScreen({ currentDay, config, playerPositions, turn, diceValue, handleRoll, isRolling, isMoving, modalOpen }) {
   const getPlayerColor = (id) => ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"][id - 1];
@@ -29,10 +30,11 @@ export default function GameScreen({ currentDay, config, playerPositions, turn, 
         </div>
 
         {/* Angka Dadu */}
-        <div className="bg-white w-20 h-20 mx-auto rounded-3xl shadow-inner flex items-center justify-center mb-6 border-4 border-[#EADCCB]">
-          <span className={`text-5xl font-black text-[#2D5A8E] ${isRolling ? 'animate-bounce' : ''}`}>
-            {diceValue || "?"}
-          </span>
+        <div className="bg-white w-24 h-24 mx-auto rounded-3xl shadow-inner flex items-center justify-center mb-6 border-4 border-[#EADCCB]">
+          {diceValue || isRolling
+            ? <DiceRoller diceValue={diceValue} isRolling={isRolling} />
+            : <span className="text-4xl font-black text-[#2D5A8E]/30">?</span>
+          }
         </div>
 
         <button

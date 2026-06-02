@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { generateBoardConfig } from '@/utils/boardGenerator';
 import { getChallengeListByDay } from '@/utils/challengeData';
 import {
@@ -66,10 +66,15 @@ export const useGameEngine = () => {
     const [completedAtByDay, setCompletedAtByDay] = useState({});
     const [now, setNow] = useState(Date.now());
 
+    // Ref: mencegah save effect nulis ke localStorage sebelum load effect selesai baca
+    const hasLoaded = useRef(false);
+
+    // Timer hanya aktif saat di layar DAY_SELECT (menghitung countdown unlock hari)
     useEffect(() => {
+        if (gameState !== GAME_STATES.DAY_SELECT) return;
         const id = setInterval(() => setNow(Date.now()), 1000);
         return () => clearInterval(id);
-    }, []);
+    }, [gameState]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -89,10 +94,13 @@ export const useGameEngine = () => {
         } catch {
             // no-op
         }
+        // Tandai bahwa load sudah selesai; save effect boleh mulai menulis
+        hasLoaded.current = true;
     }, []);
 
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        // Tunggu sampai load effect selesai agar tidak overwrite data tersimpan
+        if (!hasLoaded.current || typeof window === 'undefined') return;
 
         localStorage.setItem(
             STORAGE_KEY,
@@ -135,6 +143,7 @@ export const useGameEngine = () => {
         for (let i = 1; i <= playerCount; i++) pos[i] = 1;
         setPlayerPositions(pos);
         setTurn(1);
+        setDiceValue(0);
         setGameState(GAME_STATES.PLAYING);
     }, [playerCount]);
 

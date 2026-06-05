@@ -20,11 +20,11 @@ export default function HomeScreen({ onStart, onAbout }) {
       </div>
 
       {/* Bagian Tengah: Gambar Hero (Board Game) */}
-      <div className="relative z-10 w-full max-w-2xl transform hover:scale-105 transition-transform duration-500">
-        <img 
-          src="/Gambar-Home.png" // Ganti dengan path gambar board tengahmu
+      <div className="relative z-10">
+        <img
+          src="/Gambar-Home.png"
           alt="Tangga Berani Illustration"
-          className="w-full h-auto drop-shadow-2xl"
+          className="max-h-[40vh] md:max-h-[50vh] w-auto mx-auto drop-shadow-2xl"
         />
       </div>
 

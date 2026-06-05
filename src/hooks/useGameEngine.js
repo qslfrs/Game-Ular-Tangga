@@ -11,12 +11,17 @@ import {
     GAME_STATES,
     PLAYER_COUNT_DEFAULT,
     TOTAL_DAYS,
-    DAY_UNLOCK_DELAY_MS
+    DAY_UNLOCK_DELAY_MS,
+    DEV_UNLOCK_ALL_DAYS
 } from '@/utils/constants';
 
 const STORAGE_KEY = 'tangga-berani-progress-v1';
 
 const buildDayMeta = (day, now, completedAtByDay) => {
+    if (DEV_UNLOCK_ALL_DAYS) {
+        return { day, unlocked: true, completed: !!completedAtByDay[day], unlockAt: null, remainingMs: 0 };
+    }
+
     if (day === 1) {
         return {
             day,
@@ -60,7 +65,7 @@ export const useGameEngine = () => {
     const [diceValue, setDiceValue] = useState(0);
     const [isRolling, setIsRolling] = useState(false);
     const [isMoving, setIsMoving] = useState(false);
-    const [modal, setModal] = useState({ isOpen: false, type: "", content: "" });
+    const [modal, setModal] = useState({ isOpen: false, type: "", content: "", meta: null });
     const [winner, setWinner] = useState(null);
     const [currentDay, setCurrentDay] = useState(1);
     const [completedAtByDay, setCompletedAtByDay] = useState({});
@@ -137,7 +142,7 @@ export const useGameEngine = () => {
 
     // 1. Inisialisasi Game
     const startGame = useCallback(() => {
-        const newConfig = generateBoardConfig();
+        const newConfig = generateBoardConfig(currentDay);
         setConfig(newConfig);
         const pos = {};
         for (let i = 1; i <= playerCount; i++) pos[i] = 1;
@@ -145,7 +150,7 @@ export const useGameEngine = () => {
         setTurn(1);
         setDiceValue(0);
         setGameState(GAME_STATES.PLAYING);
-    }, [playerCount]);
+    }, [playerCount, currentDay]);
 
     // 2. Helper: Ganti Giliran
     const nextTurn = useCallback(() => {
@@ -158,6 +163,13 @@ export const useGameEngine = () => {
         if (config.dareTiles.includes(position)) return "dare";
         if (config.reflectionTiles.includes(position)) return "reflection";
         return null;
+    };
+
+    const getTeleportTarget = (position) => {
+        if (currentDay !== 2) return null;
+        const target = config?.teleports?.[position];
+        // Safeguard: hanya boleh teleport ke atas
+        return (target && target > position) ? target : null;
     };
 
     // 4. Logic Utama Gerakan Ular/Tangga
@@ -181,12 +193,13 @@ export const useGameEngine = () => {
     };
 
     // 5. Helper: Munculkan Modal
-    const triggerModal = (type) => {
+    const triggerModal = (type, meta = null) => {
         const list = getChallengeListByDay(currentDay, type);
         setModal({
             isOpen: true,
             type: type,
-            content: list[Math.floor(Math.random() * list.length)]
+            content: list[Math.floor(Math.random() * list.length)],
+            meta
         });
     };
 
@@ -212,6 +225,13 @@ export const useGameEngine = () => {
             return;
         }
 
+        const teleportTarget = getTeleportTarget(targetPos);
+        if (teleportTarget) {
+            triggerModal("hardTeleport", { from: targetPos, to: teleportTarget });
+            setIsMoving(false);
+            return;
+        }
+
         // Langkah A: Cek apakah mendarat di Bintang
         const specialType = checkSpecialTile(targetPos);
         if (specialType) {
@@ -228,9 +248,9 @@ export const useGameEngine = () => {
     };
 
     // 7. Handler: Tutup Modal (Melanjutkan logic yang tertunda)
-    const handleModalClose = useCallback(async () => {
+    const handleModalClose = async () => {
         setModal(prev => ({ ...prev, isOpen: false }));
-        
+
         const currentPos = playerPositions[turn];
         
         // Cek apakah posisi setelah bintang adalah awal tangga/kepala ular
@@ -245,7 +265,51 @@ export const useGameEngine = () => {
         } else {
             nextTurn();
         }
-    }, [turn, playerPositions, config, nextTurn]);
+    };
+
+    const handleTeleportAccept = async () => {
+        const activeModal = modal;
+        const teleportTarget = activeModal?.meta?.to;
+
+        setModal(prev => ({ ...prev, isOpen: false }));
+
+        if (!teleportTarget) {
+            nextTurn();
+            return;
+        }
+
+        setIsMoving(true);
+        await new Promise(r => setTimeout(r, ANIMATION_SPEED_JUMP));
+        setPlayerPositions(prev => ({ ...prev, [turn]: teleportTarget }));
+
+        if (teleportTarget === BOARD_SIZE) {
+            setWinner(turn);
+            setCompletedAtByDay(prev => {
+                if (prev[currentDay]) return prev;
+                return { ...prev, [currentDay]: Date.now() };
+            });
+            setIsMoving(false);
+            return;
+        }
+
+        const specialAfterTeleport = checkSpecialTile(teleportTarget);
+        if (specialAfterTeleport) {
+            triggerModal(specialAfterTeleport);
+            setIsMoving(false);
+            return;
+        }
+
+        const modalTriggeredAfterJump = await handleSnakeOrLadder(turn, teleportTarget);
+        setIsMoving(false);
+        if (!modalTriggeredAfterJump) {
+            nextTurn();
+        }
+    };
+
+    const handleTeleportSkip = () => {
+        setModal(prev => ({ ...prev, isOpen: false }));
+        nextTurn();
+    };
 
     // 8. Handler: Roll Dadu
     const handleRoll = async () => {
@@ -274,13 +338,13 @@ export const useGameEngine = () => {
         setCompletedAtByDay({});
         setCurrentDay(1);
         setWinner(null);
-        setModal({ isOpen: false, type: "", content: "" });
+        setModal({ isOpen: false, type: "", content: "", meta: null });
         setGameState(GAME_STATES.DAY_SELECT);
     }, []);
 
     const goToDaySelect = useCallback(() => {
         setWinner(null);
-        setModal({ isOpen: false, type: "", content: "" });
+        setModal({ isOpen: false, type: "", content: "", meta: null });
         setGameState(GAME_STATES.DAY_SELECT);
     }, []);
 
@@ -311,6 +375,8 @@ export const useGameEngine = () => {
         startGame,
         handleRoll,
         handleModalClose,
+        handleTeleportAccept,
+        handleTeleportSkip,
         resetGame
     };
 };

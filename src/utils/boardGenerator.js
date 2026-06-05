@@ -1,12 +1,13 @@
 import { BOARD_SIZE, SPECIAL_TILE_COUNT, SNAKE_COUNT, LADDER_COUNT } from './constants';
 
-export const generateBoardConfig = () => {
+export const generateBoardConfig = (day = 1) => {
   const config = {
     snakes: {},
     ladders: {},
     truthTiles: [],
     dareTiles: [],
-    reflectionTiles: []
+    reflectionTiles: [],
+    teleports: {}
   };
 
   const usedTiles = new Set([1, BOARD_SIZE]);
@@ -62,6 +63,29 @@ export const generateBoardConfig = () => {
   for (let i = 0; i < SPECIAL_TILE_COUNT; i++) config.truthTiles.push(getRandomTile());
   for (let i = 0; i < SPECIAL_TILE_COUNT; i++) config.dareTiles.push(getRandomTile());
   for (let i = 0; i < SPECIAL_TILE_COUNT; i++) config.reflectionTiles.push(getRandomTile());
+
+  // 4. Day 2: Plot Teleport (harus kotak kosong juga)
+  if (day === 2) {
+    const TELEPORT_COUNT = 3;
+    let tCount = 0;
+    let tAttempts = 0;
+
+    while (tCount < TELEPORT_COUNT && tAttempts < TELEPORT_COUNT * 30) {
+      tAttempts++;
+      const start = getRandomTile();
+      const end = getRandomTile([start]);
+
+      // Teleport harus ke atas (end > start) dengan jarak minimal 8 kotak
+      if (end <= start || end - start < 8) {
+        usedTiles.delete(start);
+        usedTiles.delete(end);
+        continue;
+      }
+
+      config.teleports[start] = end;
+      tCount++;
+    }
+  }
 
   return config;
 };

@@ -1,6 +1,8 @@
 "use client";
 import React, { useMemo } from 'react';
 
+const TELEPORT_COLORS = ['#EF4444', '#F97316', '#8B5CF6'];
+
 const Board = ({ config, playerPositions }) => {
   // Membuat urutan angka ular tangga (Z-pattern)
   const board = useMemo(() => {
@@ -20,6 +22,16 @@ const Board = ({ config, playerPositions }) => {
     dare: new Set(config.dareTiles),
     reflection: new Set(config.reflectionTiles),
   }), [config]);
+
+  const teleportTileMap = useMemo(() => {
+    const map = {};
+    Object.entries(config.teleports || {}).forEach(([src, dst], i) => {
+      const color = TELEPORT_COLORS[i % TELEPORT_COLORS.length];
+      map[Number(src)] = color;
+      map[Number(dst)] = color;
+    });
+    return map;
+  }, [config]);
 
   const getTileCoords = (tileNum) => {
     const totalRows = 7;
@@ -67,6 +79,12 @@ const Board = ({ config, playerPositions }) => {
               {specialTileSets.truth.has(tile) && <img src="/yellow-star.png" className="w-full h-full object-contain" alt="Truth" />}
               {specialTileSets.dare.has(tile) && <img src="/purple-star.png" className="w-full h-full object-contain" alt="Dare" />}
               {specialTileSets.reflection.has(tile) && <img src="/green-star.png" className="w-full h-full object-contain" alt="Reflect" />}
+              {teleportTileMap[tile] && (
+                <div
+                  className="w-full h-full rounded-full border-[3px] border-white shadow-md"
+                  style={{ backgroundColor: teleportTileMap[tile] }}
+                />
+              )}
             </div>
           </div>
         ))}
@@ -107,6 +125,7 @@ const Board = ({ config, playerPositions }) => {
             />
           );
         })}
+
       </svg>
 
       {/* PION PEMAIN */}

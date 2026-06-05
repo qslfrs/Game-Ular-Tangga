@@ -33,7 +33,7 @@ export default function Home() {
     isRolling, isMoving,
     modal, setModal,
     winner, setWinner,
-    startGame, handleRoll, handleModalClose, resetGame
+    startGame, handleRoll, handleModalClose, handleTeleportAccept, handleTeleportSkip, resetGame
   } = useGameEngine();
 
   const handleWinContinue = () => {
@@ -113,6 +113,8 @@ export default function Home() {
       <ChallengeModal
         {...modal}
         onClose={handleModalClose}
+        onTeleportAccept={handleTeleportAccept}
+        onTeleportSkip={handleTeleportSkip}
       />
 
       <VictoryModal

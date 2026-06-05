@@ -43,6 +43,13 @@ export const challengesByDay = {
       "Apa satu kebiasaan baik yang mau kamu lanjutkan besok?",
       "Siapa yang paling kamu syukuri dukungannya hari ini?",
       "Kalau kamu memberi semangat ke diri sendiri, kalimatnya apa?"
+    ],
+    hard: [
+      "Sebutkan 5 hal positif tentang dirimu tanpa jeda.",
+      "Lakukan presentasi 30 detik tentang kenapa kamu pantas menang.",
+      "Beri semangat ke semua pemain satu per satu dengan kontak mata.",
+      "Lakukan pose percaya diri selama 20 detik sambil tersenyum.",
+      "Ceritakan momen kamu berhasil mengalahkan rasa takut."
     ]
   },
   3: {
@@ -141,6 +148,11 @@ export const challengesByDay = {
 
 export const getChallengeListByDay = (day, type) => {
   const safeDay = challengesByDay[day] ? day : 1;
-  const safeType = ["truth", "dare", "reflection"].includes(type) ? type : "truth";
+  const safeType = ["truth", "dare", "reflection", "hardTeleport"].includes(type) ? type : "truth";
+
+  if (safeType === "hardTeleport") {
+    return challengesByDay[safeDay].hard || challengesByDay[1].dare;
+  }
+
   return challengesByDay[safeDay][safeType] || challengesByDay[1][safeType];
 };

@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 
 const TELEPORT_COLORS = ['#EF4444', '#F97316', '#8B5CF6'];
 
-const Board = ({ config, playerPositions }) => {
+const Board = ({ config, playerPositions, visibleTiles = [], isFogEnabled = false }) => {
   // Membuat urutan angka ular tangga (Z-pattern)
   const board = useMemo(() => {
     const tempBoard = [];
@@ -33,6 +33,10 @@ const Board = ({ config, playerPositions }) => {
     return map;
   }, [config]);
 
+  const visibleTileSet = useMemo(() => new Set(visibleTiles), [visibleTiles]);
+
+  const isTileVisible = (tile) => !isFogEnabled || visibleTileSet.has(tile);
+
   const getTileCoords = (tileNum) => {
     const totalRows = 7;
     const totalCols = 10;
@@ -58,34 +62,46 @@ const Board = ({ config, playerPositions }) => {
 
   const getPlayerColor = (id) => ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"][id - 1];
 
+  const shouldShowConnection = (from, to) => {
+    if (!isFogEnabled) return true;
+    return visibleTileSet.has(from) && visibleTileSet.has(to);
+  };
+
   return (
     <div className="relative w-[320px] h-[320px] md:w-[550px] md:h-[550px] bg-[#FDF8F2]/90 backdrop-blur-sm border-[10px] border-white shadow-2xl rounded-[40px] overflow-hidden p-2">
       
       {/* GRID KOTAK */}
       <div className="absolute inset-2 grid grid-cols-10 grid-rows-7 gap-1">
         {board.flat().map((tile) => (
-          <div 
-            key={tile} 
+          <div
+            key={tile}
             className={`relative flex items-center justify-center rounded-lg shadow-sm transition-all
-              ${tile % 2 !== 0 ? 'bg-[#E3B5A4]' : 'bg-[#F3FDCF]'}`}
+              ${isTileVisible(tile)
+                ? (tile % 2 !== 0 ? 'bg-[#E3B5A4]' : 'bg-[#F3FDCF]')
+                : 'bg-slate-600/90'
+              }`}
           >
-            {/* Nomor Kotak */}
-            <span className="absolute top-0.5 left-1 text-[8px] md:text-[12px] font-black text-[#2D5A8E]/40">
-              {tile}
-            </span>
+            {isTileVisible(tile) && (
+              <span className="absolute top-0.5 left-1 text-[8px] md:text-[12px] font-black text-[#2D5A8E]/40">
+                {tile}
+              </span>
+            )}
             
             {/* Icon Bintang (Jika ada di config) */}
             <div className="w-6 h-6 md:w-10 md:h-10">
-              {specialTileSets.truth.has(tile) && <img src="/yellow-star.png" className="w-full h-full object-contain" alt="Truth" />}
-              {specialTileSets.dare.has(tile) && <img src="/purple-star.png" className="w-full h-full object-contain" alt="Dare" />}
-              {specialTileSets.reflection.has(tile) && <img src="/green-star.png" className="w-full h-full object-contain" alt="Reflect" />}
-              {teleportTileMap[tile] && (
+              {isTileVisible(tile) && specialTileSets.truth.has(tile) && <img src="/yellow-star.png" className="w-full h-full object-contain" alt="Truth" />}
+              {isTileVisible(tile) && specialTileSets.dare.has(tile) && <img src="/purple-star.png" className="w-full h-full object-contain" alt="Dare" />}
+              {isTileVisible(tile) && specialTileSets.reflection.has(tile) && <img src="/green-star.png" className="w-full h-full object-contain" alt="Reflect" />}
+              {isTileVisible(tile) && teleportTileMap[tile] && (
                 <div
                   className="w-full h-full rounded-full border-[3px] border-white shadow-md"
                   style={{ backgroundColor: teleportTileMap[tile] }}
                 />
               )}
             </div>
+            {!isTileVisible(tile) && (
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-slate-300/40 via-slate-200/10 to-slate-400/30" />
+            )}
           </div>
         ))}
       </div>
@@ -100,8 +116,12 @@ const Board = ({ config, playerPositions }) => {
 
         {/* Garis Tangga (Cokelat Kayu) */}
         {Object.entries(config.ladders).map(([s, e]) => {
-          const from = getTileCoords(parseInt(s));
-          const to = getTileCoords(parseInt(e));
+          const start = parseInt(s);
+          const end = parseInt(e);
+          if (!shouldShowConnection(start, end)) return null;
+
+          const from = getTileCoords(start);
+          const to = getTileCoords(end);
           return (
             <g key={s}>
               <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="#8B4513" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
@@ -113,8 +133,12 @@ const Board = ({ config, playerPositions }) => {
 
         {/* Garis Ular (Garis Putus-putus Hijau Tua dengan Lengkungan) */}
         {Object.entries(config.snakes).map(([s, e]) => {
-          const from = getTileCoords(parseInt(s));
-          const to = getTileCoords(parseInt(e));
+          const start = parseInt(s);
+          const end = parseInt(e);
+          if (!shouldShowConnection(start, end)) return null;
+
+          const from = getTileCoords(start);
+          const to = getTileCoords(end);
           const midX = (from.x + to.x) / 2 + 5;
           const midY = (from.y + to.y) / 2 - 5;
           return (

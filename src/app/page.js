@@ -28,7 +28,7 @@ export default function Home() {
     goToDaySelect,
     playerCount, setPlayerCount,
     agreed, setAgreed,
-    config, playerPositions,
+    config, playerPositions, visibleTiles,
     turn, diceValue,
     isRolling, isMoving,
     modal, setModal,
@@ -89,6 +89,7 @@ export default function Home() {
           currentDay={currentDay}
           config={config}
           playerPositions={playerPositions}
+          visibleTiles={visibleTiles}
           turn={turn}
           diceValue={diceValue}
           handleRoll={handleRoll}

@@ -1,7 +1,7 @@
 import Board from "@/components/game/Board";
 import DiceRoller from "@/components/game/DiceRoller";
 
-export default function GameScreen({ currentDay, config, playerPositions, turn, diceValue, handleRoll, isRolling, isMoving, modalOpen }) {
+export default function GameScreen({ currentDay, config, playerPositions, visibleTiles, turn, diceValue, handleRoll, isRolling, isMoving, modalOpen }) {
   const getPlayerColor = (id) => ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"][id - 1];
 
   return (
@@ -11,7 +11,12 @@ export default function GameScreen({ currentDay, config, playerPositions, turn, 
     >
       {/* Container Papan */}
       <div className="relative order-2 lg:order-1">
-        <Board config={config} playerPositions={playerPositions} />
+        <Board
+          config={config}
+          playerPositions={playerPositions}
+          visibleTiles={visibleTiles}
+          isFogEnabled={currentDay === 3}
+        />
       </div>
 
       {/* Panel Kontrol Dadu */}
@@ -19,6 +24,11 @@ export default function GameScreen({ currentDay, config, playerPositions, turn, 
         <div className="mb-3 bg-[#2D5A8E]/10 rounded-xl py-1 border border-[#2D5A8E]/20">
           <p className="text-[#2D5A8E] font-black text-xs tracking-wider">HARI D-{currentDay}</p>
         </div>
+        {currentDay === 3 && (
+          <div className="mb-3 bg-[#0f172a]/90 text-white rounded-xl py-1 border border-white/20">
+            <p className="font-black text-[10px] tracking-widest">FOG OF WAR AKTIF</p>
+          </div>
+        )}
 
         <h3 className="text-[#2D5A8E] font-black mb-3 uppercase tracking-widest text-xs">Giliran</h3>
         

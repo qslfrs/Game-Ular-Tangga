@@ -4,6 +4,8 @@ import { generateBoardConfig } from '@/utils/boardGenerator';
 import { getChallengeListByDay } from '@/utils/challengeData';
 import {
     BOARD_SIZE,
+    BOARD_ROWS,
+    BOARD_COLS,
     DICE_MAX,
     ANIMATION_SPEED_MOVE,
     ANIMATION_SPEED_JUMP,
@@ -70,6 +72,7 @@ export const useGameEngine = () => {
     const [currentDay, setCurrentDay] = useState(1);
     const [completedAtByDay, setCompletedAtByDay] = useState({});
     const [now, setNow] = useState(Date.now());
+    const [visibleTiles, setVisibleTiles] = useState([]);
 
     // Ref: mencegah save effect nulis ke localStorage sebelum load effect selesai baca
     const hasLoaded = useRef(false);
@@ -140,6 +143,38 @@ export const useGameEngine = () => {
         return true;
     }, [isDayUnlocked]);
 
+    const tileToGrid = useCallback((tile) => {
+        const index = tile - 1;
+        const row = Math.floor(index / BOARD_COLS);
+        let col = index % BOARD_COLS;
+
+        if (row % 2 !== 0) {
+            col = (BOARD_COLS - 1) - col;
+        }
+
+        return { row, col };
+    }, []);
+
+    const gridToTile = useCallback((row, col) => {
+        if (row < 0 || row >= BOARD_ROWS || col < 0 || col >= BOARD_COLS) return null;
+        if (row % 2 === 0) return row * BOARD_COLS + col + 1;
+        return row * BOARD_COLS + (BOARD_COLS - col);
+    }, []);
+
+    const revealTilesAround = useCallback((tile, radius = 1) => {
+        const origin = tileToGrid(tile);
+        const tiles = new Set();
+
+        for (let dr = -radius; dr <= radius; dr++) {
+            for (let dc = -radius; dc <= radius; dc++) {
+                const target = gridToTile(origin.row + dr, origin.col + dc);
+                if (target) tiles.add(target);
+            }
+        }
+
+        return tiles;
+    }, [tileToGrid, gridToTile]);
+
     // 1. Inisialisasi Game
     const startGame = useCallback(() => {
         const newConfig = generateBoardConfig(currentDay);
@@ -147,10 +182,34 @@ export const useGameEngine = () => {
         const pos = {};
         for (let i = 1; i <= playerCount; i++) pos[i] = 1;
         setPlayerPositions(pos);
+        if (currentDay === 3) {
+            const initialVisible = new Set();
+            Object.values(pos).forEach((playerPos) => {
+                revealTilesAround(playerPos).forEach((tile) => initialVisible.add(tile));
+            });
+            setVisibleTiles(Array.from(initialVisible));
+        } else {
+            setVisibleTiles([]);
+        }
         setTurn(1);
         setDiceValue(0);
         setGameState(GAME_STATES.PLAYING);
-    }, [playerCount, currentDay]);
+    }, [playerCount, currentDay, revealTilesAround]);
+
+    useEffect(() => {
+        if (gameState !== GAME_STATES.PLAYING || currentDay !== 3) return;
+
+        setVisibleTiles((prev) => {
+            const next = new Set(prev);
+
+            Object.values(playerPositions).forEach((playerPos) => {
+                revealTilesAround(playerPos).forEach((tile) => next.add(tile));
+            });
+
+            if (next.size === prev.length) return prev;
+            return Array.from(next);
+        });
+    }, [gameState, currentDay, playerPositions, revealTilesAround]);
 
     // 2. Helper: Ganti Giliran
     const nextTurn = useCallback(() => {
@@ -332,18 +391,21 @@ export const useGameEngine = () => {
         setTurn(1);
         setIsMoving(false);
         setDiceValue(0);
+        setVisibleTiles([]);
     };
 
     const resetDayProgress = useCallback(() => {
         setCompletedAtByDay({});
         setCurrentDay(1);
         setWinner(null);
+        setVisibleTiles([]);
         setModal({ isOpen: false, type: "", content: "", meta: null });
         setGameState(GAME_STATES.DAY_SELECT);
     }, []);
 
     const goToDaySelect = useCallback(() => {
         setWinner(null);
+        setVisibleTiles([]);
         setModal({ isOpen: false, type: "", content: "", meta: null });
         setGameState(GAME_STATES.DAY_SELECT);
     }, []);
@@ -364,6 +426,7 @@ export const useGameEngine = () => {
         setAgreed,
         config,
         playerPositions,
+        visibleTiles,
         turn,
         diceValue,
         isRolling,
